@@ -1,22 +1,21 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./client/index.js", // assumes your entry point is the index.js in the root of your project folder
-  mode: "development",
+  entry: ["@babel/polyfill", "./client/index.js"],
   output: {
-    path: path.resolve(__dirname, "public"), // assumes your bundle.js will also be in the root of your project folder
+    path: path.resolve(__dirname, "public"),
     filename: "bundle.js",
   },
-  devtool: "source-maps",
+  mode: "development",
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-        },
+        loader: "babel-loader",
       },
     ],
   },
+  devtool: "source-map",
+  watch: true,
 };
