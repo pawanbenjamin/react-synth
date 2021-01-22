@@ -1,45 +1,80 @@
-import React, { useState } from "react";
-import createAudioContext from "../audio/AudioContext";
+import React, { useState, useEffect } from "react";
+import { createAudioContext } from "../audio/audioContext";
+import { freqTable } from "../audio/frequencies";
 
 const Keyboard = () => {
+  //   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  const context = createAudioContext();
+
+  useEffect(() => {
+    // audioCtx.resume();
+  }, []);
+
+  //   const gain = audioCtx.createGain();
+  //   const biquadFilter = audioCtx.createBiquadFilter();
+  //   gain.connect(filter);
+  //   biquadFilter.connect(audioCtx.destination);
+
   const [waveForm, setWaveForm] = useState("sawtooth");
   const [filter, setFilter] = useState("lowpass");
   const [filterFreq, setFilterFreq] = useState(0);
   const [octave, setOctave] = useState(0.125);
-  const [gain, setGain] = useState(0.5);
+  const [gainLvl, setGainLvl] = useState(0.5);
 
-  console.log(octave);
+//   const [activeOscillators, setActiveOscillators] = useState({});
+  //   setActiveOscillator(prevOscs => return { ...prevOscs, Key: Value})
+  let activeOscillators = {}
+
+  //   console.log(audioCtx);
+  //   console.log(freqTable);
+
+
+  console.log(context);
+
+  const playNote = (key) => {
+    const osc = context.createOscillator();
+    osc.frequency.setValueAtTime(freqTable[key] * octave, context.currentTime);
+    osc.type = waveForm;
+    activeOscillators[key] = osc
+    activeOscillators[key].start
+  };
 
   return (
     <div className="Keyboard">
+      <button onClick={() => console.log("button")}></button>
       <ul className="set">
         <div className="controls">
           <span>Waveform: </span>
-          <select id="waveform" onChange={(e) => setWaveForm(e.target.value)}>
+          <select
+            value={waveForm}
+            id="waveform"
+            onChange={(e) => setWaveForm(e.target.value)}
+          >
             <option value="sine">Sine</option>
             <option value="square">Square</option>
-            <option value="sawtooth" selected="selected">
-              Sawtooth
-            </option>
+            <option value="sawtooth">Sawtooth</option>
             <option value="triangle">Triangle</option>
           </select>
           <br />
-          <span>Gain: </span>
+          <span>Lvl: </span>
           <input
             id="gain"
             type="range"
             min="0.0"
             max="1.0"
             step="0.01"
-            value={gain}
-            onChange={(e) => setGain(e.target.value)}
+            value={gainLvl}
+            onChange={(e) => setGainLvl(e.target.value)}
           />
           <br />
           <span>Filter Type: </span>
-          <select id="filterType" onChange={(e) => setFilter(e.target.value)}>
-            <option value="lowpass" selected="selected">
-              Lowpass
-            </option>
+          <select
+            value={filter}
+            id="filterType"
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="lowpass">Lowpass</option>
             <option value="highpass">Highpass</option>
             <option value="bandpass">Bandpass</option>
           </select>
@@ -56,7 +91,11 @@ const Keyboard = () => {
           />
           <div className="oct">
             <span>Octave: </span>
-            <select id="octave" onChange={(e) => setOctave(e.target.value)}>
+            <select
+              id="octave"
+              value={octave}
+              onChange={(e) => setOctave(e.target.value)}
+            >
               <option value="0.125">-3</option>
               <option value="0.25">-2</option>
               <option value="0.5">-1</option>

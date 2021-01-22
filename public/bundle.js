@@ -87,9 +87,9 @@ var App = function App() {
 
 /***/ }),
 
-/***/ "./client/audio/AudioContext.js":
+/***/ "./client/audio/audioContext.js":
 /*!**************************************!*\
-  !*** ./client/audio/AudioContext.js ***!
+  !*** ./client/audio/audioContext.js ***!
   \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -102,10 +102,66 @@ var createAudioContext = function createAudioContext() {
   var audioCtx = window.AudioContext || window.webkitAudioContext;
   var context = new audioCtx();
 
-  conxtext.onstatechange = function () {
+  context.onstatechange = function () {
     console.log(context.state);
   };
+
+  var gain = context.createGain();
+  var biquadFilter = context.createBiquadFilter();
+  gain.connect(biquadFilter);
+  biquadFilter.connect(context.destination);
+  return context;
 };
+
+/***/ }),
+
+/***/ "./client/audio/frequencies.js":
+/*!*************************************!*\
+  !*** ./client/audio/frequencies.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "freqTable": () => /* binding */ freqTable,
+/* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var freqTable = {
+  90: 261.625565300598634,
+  83: 277.182630976872096,
+  88: 293.66476791740756,
+  68: 311.12698372208091,
+  67: 329.627556912869929,
+  86: 349.228231433003884,
+  71: 369.994422711634398,
+  66: 391.995435981749294,
+  72: 415.304697579945138,
+  78: 440.0,
+  74: 466.163761518089916,
+  77: 493.883301256124111,
+  81: 523.251130601197269,
+  50: 554.365261953744192,
+  87: 587.32953583481512,
+  51: 622.253967444161821,
+  69: 659.255113825739859,
+  82: 698.456462866007768,
+  53: 739.988845423268797,
+  84: 783.990871963498588,
+  54: 830.609395159890277,
+  89: 880.0,
+  55: 932.327523036179832,
+  85: 987.766602512248223,
+  73: 1046.5
+};
+
+var FreqInput = function FreqInput() {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Frequency Input form");
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FreqInput);
 
 /***/ }),
 
@@ -121,7 +177,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _audio_AudioContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../audio/AudioContext */ "./client/audio/AudioContext.js");
+/* harmony import */ var _audio_audioContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../audio/audioContext */ "./client/audio/audioContext.js");
+/* harmony import */ var _audio_frequencies__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../audio/frequencies */ "./client/audio/frequencies.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -137,7 +194,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+
 var Keyboard = function Keyboard() {
+  //   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var context = (0,_audio_audioContext__WEBPACK_IMPORTED_MODULE_1__.createAudioContext)();
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {// audioCtx.resume();
+  }, []); //   const gain = audioCtx.createGain();
+  //   const biquadFilter = audioCtx.createBiquadFilter();
+  //   gain.connect(filter);
+  //   biquadFilter.connect(audioCtx.destination);
+
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("sawtooth"),
       _useState2 = _slicedToArray(_useState, 2),
       waveForm = _useState2[0],
@@ -160,17 +226,36 @@ var Keyboard = function Keyboard() {
 
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0.5),
       _useState10 = _slicedToArray(_useState9, 2),
-      gain = _useState10[0],
-      setGain = _useState10[1];
+      gainLvl = _useState10[0],
+      setGainLvl = _useState10[1]; //   const [activeOscillators, setActiveOscillators] = useState({});
+  //   setActiveOscillator(prevOscs => return { ...prevOscs, Key: Value})
 
-  console.log(octave);
+
+  var activeOscillators = {}; //   console.log(audioCtx);
+  //   console.log(freqTable);
+
+  console.log(context);
+
+  var playNote = function playNote(key) {
+    var osc = context.createOscillator();
+    osc.frequency.setValueAtTime(_audio_frequencies__WEBPACK_IMPORTED_MODULE_2__.freqTable[key] * octave, context.currentTime);
+    osc.type = waveForm;
+    activeOscillators[key] = osc;
+    activeOscillators[key].start;
+  };
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "Keyboard"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
+    onClick: function onClick() {
+      return console.log("button");
+    }
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
     className: "set"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "controls"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Waveform: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", {
+    value: waveForm,
     id: "waveform",
     onChange: function onChange(e) {
       return setWaveForm(e.target.value);
@@ -180,28 +265,27 @@ var Keyboard = function Keyboard() {
   }, "Sine"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
     value: "square"
   }, "Square"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
-    value: "sawtooth",
-    selected: "selected"
+    value: "sawtooth"
   }, "Sawtooth"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
     value: "triangle"
-  }, "Triangle")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Gain: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
+  }, "Triangle")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Lvl: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", {
     id: "gain",
     type: "range",
     min: "0.0",
     max: "1.0",
     step: "0.01",
-    value: gain,
+    value: gainLvl,
     onChange: function onChange(e) {
-      return setGain(e.target.value);
+      return setGainLvl(e.target.value);
     }
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Filter Type: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", {
+    value: filter,
     id: "filterType",
     onChange: function onChange(e) {
       return setFilter(e.target.value);
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
-    value: "lowpass",
-    selected: "selected"
+    value: "lowpass"
   }, "Lowpass"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
     value: "highpass"
   }, "Highpass"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
@@ -220,6 +304,7 @@ var Keyboard = function Keyboard() {
     className: "oct"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Octave: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", {
     id: "octave",
+    value: octave,
     onChange: function onChange(e) {
       return setOctave(e.target.value);
     }
