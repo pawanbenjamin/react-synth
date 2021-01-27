@@ -76,11 +76,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _components_keyboard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/keyboard */ "./client/components/keyboard.js");
+/* harmony import */ var _audio_audioContext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./audio/audioContext */ "./client/audio/audioContext.js");
+
 
 
 
 var App = function App() {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Hello from inside the app!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_keyboard__WEBPACK_IMPORTED_MODULE_1__.default, null));
+  var _createAudioContext = (0,_audio_audioContext__WEBPACK_IMPORTED_MODULE_2__.createAudioContext)(),
+      context = _createAudioContext.context,
+      gain = _createAudioContext.gain,
+      biquadFilter = _createAudioContext.biquadFilter;
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Hello from inside the app!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_keyboard__WEBPACK_IMPORTED_MODULE_1__.default, {
+    context: context,
+    gain: gain,
+    biquadFilter: biquadFilter
+  }));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (App);
@@ -106,11 +117,9 @@ var createAudioContext = function createAudioContext() {
     console.log(context.state);
   };
 
-  var gain = context.createGain();
-  var biquadFilter = context.createBiquadFilter();
-  gain.connect(biquadFilter);
-  biquadFilter.connect(context.destination);
-  return context;
+  return {
+    context: context
+  };
 };
 
 /***/ }),
@@ -177,8 +186,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _audio_audioContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../audio/audioContext */ "./client/audio/audioContext.js");
-/* harmony import */ var _audio_frequencies__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../audio/frequencies */ "./client/audio/frequencies.js");
+/* harmony import */ var _audio_frequencies__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../audio/frequencies */ "./client/audio/frequencies.js");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -194,15 +202,22 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+var Keyboard = function Keyboard(props) {
+  var context = props.context;
 
-var Keyboard = function Keyboard() {
-  //   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var context = (0,_audio_audioContext__WEBPACK_IMPORTED_MODULE_1__.createAudioContext)();
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {// audioCtx.resume();
-  }, []); //   const gain = audioCtx.createGain();
-  //   const biquadFilter = audioCtx.createBiquadFilter();
-  //   gain.connect(filter);
-  //   biquadFilter.connect(audioCtx.destination);
+  context.onStateChange = function () {
+    return console.log(context.state);
+  };
+
+  var gain = context.createGain();
+  var biquadFilter = context.createBiquadFilter();
+  gain.connect(biquadFilter);
+  biquadFilter.connect(context.destination);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    context.resume();
+    window.addEventListener("keydown", keyDown, false);
+    window.addEventListener("keyup", keyUp, false);
+  }, [gainLvl]);
 
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("sawtooth"),
       _useState2 = _slicedToArray(_useState, 2),
@@ -227,21 +242,41 @@ var Keyboard = function Keyboard() {
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0.5),
       _useState10 = _slicedToArray(_useState9, 2),
       gainLvl = _useState10[0],
-      setGainLvl = _useState10[1]; //   const [activeOscillators, setActiveOscillators] = useState({});
-  //   setActiveOscillator(prevOscs => return { ...prevOscs, Key: Value})
+      setGainLvl = _useState10[1];
 
+  var activeOscillators = {};
 
-  var activeOscillators = {}; //   console.log(audioCtx);
-  //   console.log(freqTable);
+  var keyDown = function keyDown(e) {
+    var key = e.keyCode;
+    console.log(context);
+    console.log("active oscs", activeOscillators);
+    console.log("keydown", key);
 
-  console.log(context);
+    if (_audio_frequencies__WEBPACK_IMPORTED_MODULE_1__.freqTable[key] && !activeOscillators[key]) {
+      console.log("------inside contitional before playNote-------");
+      playNote(key);
+    }
+  };
+
+  var keyUp = function keyUp(e) {
+    var key = e.keyCode;
+    console.log("keyup", key);
+
+    if (_audio_frequencies__WEBPACK_IMPORTED_MODULE_1__.freqTable[key] && activeOscillators[key]) {
+      activeOscillators[key].stop();
+      delete activeOscillators[key];
+    }
+  };
 
   var playNote = function playNote(key) {
     var osc = context.createOscillator();
-    osc.frequency.setValueAtTime(_audio_frequencies__WEBPACK_IMPORTED_MODULE_2__.freqTable[key] * octave, context.currentTime);
+    osc.frequency.setValueAtTime(_audio_frequencies__WEBPACK_IMPORTED_MODULE_1__.freqTable[key] * octave, context.currentTime);
     osc.type = waveForm;
     activeOscillators[key] = osc;
-    activeOscillators[key].start;
+    activeOscillators[key].connect(gain);
+    console.log("activeOscillators[key]          ", activeOscillators[key]);
+    activeOscillators[key].start();
+    console.log("THE OSCILATOR SHOULD HAVE STARTED");
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {

@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { createAudioContext } from "../audio/audioContext";
 import { freqTable } from "../audio/frequencies";
 
-const Keyboard = () => {
-  //   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const Keyboard = (props) => {
+  const { context } = props;
 
-  const context = createAudioContext();
+  context.onStateChange = () => console.log(context.state);
+  const gain = context.createGain();
+  const biquadFilter = context.createBiquadFilter();
+  gain.connect(biquadFilter);
+  biquadFilter.connect(context.destination);
 
   useEffect(() => {
-    // audioCtx.resume();
-  }, []);
+    context.resume();
 
-  //   const gain = audioCtx.createGain();
-  //   const biquadFilter = audioCtx.createBiquadFilter();
-  //   gain.connect(filter);
-  //   biquadFilter.connect(audioCtx.destination);
+    window.addEventListener("keydown", keyDown, false);
+    window.addEventListener("keyup", keyUp, false);
+  }, [gainLvl]);
 
   const [waveForm, setWaveForm] = useState("sawtooth");
   const [filter, setFilter] = useState("lowpass");
@@ -22,22 +23,39 @@ const Keyboard = () => {
   const [octave, setOctave] = useState(0.125);
   const [gainLvl, setGainLvl] = useState(0.5);
 
-//   const [activeOscillators, setActiveOscillators] = useState({});
-  //   setActiveOscillator(prevOscs => return { ...prevOscs, Key: Value})
-  let activeOscillators = {}
+  let activeOscillators = {};
 
-  //   console.log(audioCtx);
-  //   console.log(freqTable);
+  const keyDown = (e) => {
+    const key = e.keyCode;
+    console.log(context);
+    console.log("active oscs", activeOscillators);
+    console.log("keydown", key);
+    if (freqTable[key] && !activeOscillators[key]) {
+      console.log("------inside contitional before playNote-------");
+      playNote(key);
+    }
+  };
 
-
-  console.log(context);
+  const keyUp = (e) => {
+    const key = e.keyCode;
+    console.log("keyup", key);
+    if (freqTable[key] && activeOscillators[key]) {
+      activeOscillators[key].stop();
+      delete activeOscillators[key];
+    }
+  };
 
   const playNote = (key) => {
     const osc = context.createOscillator();
+
     osc.frequency.setValueAtTime(freqTable[key] * octave, context.currentTime);
     osc.type = waveForm;
-    activeOscillators[key] = osc
-    activeOscillators[key].start
+
+    activeOscillators[key] = osc;
+    activeOscillators[key].connect(gain);
+    console.log("activeOscillators[key]          ", activeOscillators[key]);
+    activeOscillators[key].start();
+    console.log("THE OSCILATOR SHOULD HAVE STARTED");
   };
 
   return (
