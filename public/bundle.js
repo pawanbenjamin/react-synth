@@ -205,21 +205,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var Keyboard = function Keyboard(props) {
   var context = props.context;
 
-  context.onStateChange = function () {
-    return console.log(context.state);
-  };
-
-  var gain = context.createGain();
-  var biquadFilter = context.createBiquadFilter();
-  gain.connect(biquadFilter);
-  biquadFilter.connect(context.destination);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    context.resume();
-    window.addEventListener("keydown", keyDown, false);
-    window.addEventListener("keyup", keyUp, false);
-  }, [gainLvl]);
-
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("sawtooth"),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("sine"),
       _useState2 = _slicedToArray(_useState, 2),
       waveForm = _useState2[0],
       setWaveForm = _useState2[1];
@@ -244,23 +230,31 @@ var Keyboard = function Keyboard(props) {
       gainLvl = _useState10[0],
       setGainLvl = _useState10[1];
 
+  context.onStateChange = function () {
+    return console.log(context.state);
+  };
+
+  var gain = context.createGain();
+  var biquadFilter = context.createBiquadFilter();
+  gain.connect(biquadFilter);
+  biquadFilter.connect(context.destination);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    context.resume();
+    window.addEventListener("keydown", keyDown, false);
+    window.addEventListener("keyup", keyUp, false);
+  }, []);
   var activeOscillators = {};
 
   var keyDown = function keyDown(e) {
     var key = e.keyCode;
-    console.log(context);
-    console.log("active oscs", activeOscillators);
-    console.log("keydown", key);
 
     if (_audio_frequencies__WEBPACK_IMPORTED_MODULE_1__.freqTable[key] && !activeOscillators[key]) {
-      console.log("------inside contitional before playNote-------");
       playNote(key);
     }
   };
 
   var keyUp = function keyUp(e) {
     var key = e.keyCode;
-    console.log("keyup", key);
 
     if (_audio_frequencies__WEBPACK_IMPORTED_MODULE_1__.freqTable[key] && activeOscillators[key]) {
       activeOscillators[key].stop();
@@ -274,18 +268,17 @@ var Keyboard = function Keyboard(props) {
     osc.type = waveForm;
     activeOscillators[key] = osc;
     activeOscillators[key].connect(gain);
-    console.log("activeOscillators[key]          ", activeOscillators[key]);
+    console.log("------Oscillator Node-------", activeOscillators[key]);
     activeOscillators[key].start();
-    console.log("THE OSCILATOR SHOULD HAVE STARTED");
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "Keyboard"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
     onClick: function onClick() {
-      return console.log("button");
+      return console.log(waveForm, filter, filterFreq, octave, gainLvl);
     }
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
+  }, "Use State Values"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
     className: "set"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "controls"
@@ -311,7 +304,7 @@ var Keyboard = function Keyboard(props) {
     step: "0.01",
     value: gainLvl,
     onChange: function onChange(e) {
-      return setGainLvl(e.target.value);
+      return setGainLvl(+e.target.value);
     }
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, "Filter Type: "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", {
     value: filter,
@@ -333,7 +326,7 @@ var Keyboard = function Keyboard(props) {
     step: "0.01",
     value: filterFreq,
     onChange: function onChange(e) {
-      return setFilterFreq(e.target.value);
+      return setFilterFreq(+e.target.value);
     }
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "oct"
@@ -341,7 +334,7 @@ var Keyboard = function Keyboard(props) {
     id: "octave",
     value: octave,
     onChange: function onChange(e) {
-      return setOctave(e.target.value);
+      return setOctave(+e.target.value);
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", {
     value: "0.125"

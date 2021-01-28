@@ -4,7 +4,14 @@ import { freqTable } from "../audio/frequencies";
 const Keyboard = (props) => {
   const { context } = props;
 
+  const [waveForm, setWaveForm] = useState("sine");
+  const [filter, setFilter] = useState("lowpass");
+  const [filterFreq, setFilterFreq] = useState(0);
+  const [octave, setOctave] = useState(0.125);
+  const [gainLvl, setGainLvl] = useState(0.5);
+
   context.onStateChange = () => console.log(context.state);
+
   const gain = context.createGain();
   const biquadFilter = context.createBiquadFilter();
   gain.connect(biquadFilter);
@@ -12,33 +19,21 @@ const Keyboard = (props) => {
 
   useEffect(() => {
     context.resume();
-
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
-  }, [gainLvl]);
-
-  const [waveForm, setWaveForm] = useState("sawtooth");
-  const [filter, setFilter] = useState("lowpass");
-  const [filterFreq, setFilterFreq] = useState(0);
-  const [octave, setOctave] = useState(0.125);
-  const [gainLvl, setGainLvl] = useState(0.5);
+  }, []);
 
   let activeOscillators = {};
 
   const keyDown = (e) => {
     const key = e.keyCode;
-    console.log(context);
-    console.log("active oscs", activeOscillators);
-    console.log("keydown", key);
     if (freqTable[key] && !activeOscillators[key]) {
-      console.log("------inside contitional before playNote-------");
       playNote(key);
     }
   };
 
   const keyUp = (e) => {
     const key = e.keyCode;
-    console.log("keyup", key);
     if (freqTable[key] && activeOscillators[key]) {
       activeOscillators[key].stop();
       delete activeOscillators[key];
@@ -47,20 +42,23 @@ const Keyboard = (props) => {
 
   const playNote = (key) => {
     const osc = context.createOscillator();
-
     osc.frequency.setValueAtTime(freqTable[key] * octave, context.currentTime);
     osc.type = waveForm;
-
     activeOscillators[key] = osc;
     activeOscillators[key].connect(gain);
-    console.log("activeOscillators[key]          ", activeOscillators[key]);
+    console.log("------Oscillator Node-------", activeOscillators[key]);
     activeOscillators[key].start();
-    console.log("THE OSCILATOR SHOULD HAVE STARTED");
   };
 
   return (
     <div className="Keyboard">
-      <button onClick={() => console.log("button")}></button>
+      <button
+        onClick={() =>
+          console.log(waveForm, filter, filterFreq, octave, gainLvl)
+        }
+      >
+        Use State Values
+      </button>
       <ul className="set">
         <div className="controls">
           <span>Waveform: </span>
@@ -83,7 +81,7 @@ const Keyboard = (props) => {
             max="1.0"
             step="0.01"
             value={gainLvl}
-            onChange={(e) => setGainLvl(e.target.value)}
+            onChange={(e) => setGainLvl(+e.target.value)}
           />
           <br />
           <span>Filter Type: </span>
@@ -105,14 +103,14 @@ const Keyboard = (props) => {
             max="10000.0"
             step="0.01"
             value={filterFreq}
-            onChange={(e) => setFilterFreq(e.target.value)}
+            onChange={(e) => setFilterFreq(+e.target.value)}
           />
           <div className="oct">
             <span>Octave: </span>
             <select
               id="octave"
               value={octave}
-              onChange={(e) => setOctave(e.target.value)}
+              onChange={(e) => setOctave(+e.target.value)}
             >
               <option value="0.125">-3</option>
               <option value="0.25">-2</option>
