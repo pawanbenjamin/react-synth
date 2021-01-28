@@ -4,6 +4,8 @@ import { freqTable } from "../audio/frequencies";
 const Keyboard = (props) => {
   const { context } = props;
 
+  context.resume();
+
   const [waveForm, setWaveForm] = useState("sine");
   const [filter, setFilter] = useState("lowpass");
   const [filterFreq, setFilterFreq] = useState(0);
@@ -13,15 +15,23 @@ const Keyboard = (props) => {
   context.onStateChange = () => console.log(context.state);
 
   const gain = context.createGain();
+
   const biquadFilter = context.createBiquadFilter();
   gain.connect(biquadFilter);
   biquadFilter.connect(context.destination);
 
   useEffect(() => {
-    context.resume();
+    const gain = context.createGain();
+
+    const biquadFilter = context.createBiquadFilter();
+    gain.connect(biquadFilter);
+    biquadFilter.connect(context.destination);
+    gain.gain.setValueAtTime(gainLvl, context.currentTime);
+    biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
+
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
-  }, []);
+  }, [waveForm, filterFreq, filter, octave, gainLvl]);
 
   let activeOscillators = {};
 
@@ -43,6 +53,7 @@ const Keyboard = (props) => {
   const playNote = (key) => {
     const osc = context.createOscillator();
     osc.frequency.setValueAtTime(freqTable[key] * octave, context.currentTime);
+    console.log(waveForm);
     osc.type = waveForm;
     activeOscillators[key] = osc;
     activeOscillators[key].connect(gain);

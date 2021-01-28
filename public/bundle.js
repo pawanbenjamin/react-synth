@@ -204,6 +204,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Keyboard = function Keyboard(props) {
   var context = props.context;
+  context.resume();
 
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("sine"),
       _useState2 = _slicedToArray(_useState, 2),
@@ -239,10 +240,15 @@ var Keyboard = function Keyboard(props) {
   gain.connect(biquadFilter);
   biquadFilter.connect(context.destination);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    context.resume();
+    var gain = context.createGain();
+    var biquadFilter = context.createBiquadFilter();
+    gain.connect(biquadFilter);
+    biquadFilter.connect(context.destination);
+    gain.gain.setValueAtTime(gainLvl, context.currentTime);
+    biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
-  }, []);
+  }, [waveForm, filterFreq, filter, octave, gainLvl]);
   var activeOscillators = {};
 
   var keyDown = function keyDown(e) {
@@ -265,6 +271,7 @@ var Keyboard = function Keyboard(props) {
   var playNote = function playNote(key) {
     var osc = context.createOscillator();
     osc.frequency.setValueAtTime(_audio_frequencies__WEBPACK_IMPORTED_MODULE_1__.freqTable[key] * octave, context.currentTime);
+    console.log(waveForm);
     osc.type = waveForm;
     activeOscillators[key] = osc;
     activeOscillators[key].connect(gain);
