@@ -240,15 +240,19 @@ var Keyboard = function Keyboard(props) {
   gain.connect(biquadFilter);
   biquadFilter.connect(context.destination);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var gain = context.createGain();
-    var biquadFilter = context.createBiquadFilter();
-    gain.connect(biquadFilter);
-    biquadFilter.connect(context.destination);
+    // const gain = context.createGain();
+    // const biquadFilter = context.createBiquadFilter();
+    // gain.connect(biquadFilter);
+    // biquadFilter.connect(context.destination);
     gain.gain.setValueAtTime(gainLvl, context.currentTime);
     biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
-  }, [waveForm, filterFreq, filter, octave, gainLvl]);
+    return function () {
+      window.removeEventListener("keydown", keyDown);
+      window.removeEventListener("keyup", keyUp);
+    };
+  }, [waveForm, filterFreq, filter, octave, gainLvl, context]);
   var activeOscillators = {};
 
   var keyDown = function keyDown(e) {

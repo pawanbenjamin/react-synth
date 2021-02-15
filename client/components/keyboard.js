@@ -21,17 +21,22 @@ const Keyboard = (props) => {
   biquadFilter.connect(context.destination);
 
   useEffect(() => {
-    const gain = context.createGain();
+    // const gain = context.createGain();
 
-    const biquadFilter = context.createBiquadFilter();
-    gain.connect(biquadFilter);
-    biquadFilter.connect(context.destination);
+    // const biquadFilter = context.createBiquadFilter();
+    // gain.connect(biquadFilter);
+    // biquadFilter.connect(context.destination);
     gain.gain.setValueAtTime(gainLvl, context.currentTime);
     biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
 
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
-  }, [waveForm, filterFreq, filter, octave, gainLvl]);
+
+    return () => {
+      window.removeEventListener("keydown", keyDown);
+      window.removeEventListener("keyup", keyUp);
+    };
+  }, [waveForm, filterFreq, filter, octave, gainLvl, context]);
 
   let activeOscillators = {};
 
