@@ -87,7 +87,15 @@ var App = function App() {
       gain = _createAudioContext.gain,
       biquadFilter = _createAudioContext.biquadFilter;
 
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Hello from inside the app!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_keyboard__WEBPACK_IMPORTED_MODULE_1__.default, {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    style: {
+      marginTop: "30px",
+      display: "flex",
+      justifyContent: "center",
+      flexDirection: "column",
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Use your keboard starting on 'z' for your lower octave, and 'q' for the higher octave"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "move volume knob and set octave to start"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_keyboard__WEBPACK_IMPORTED_MODULE_1__.default, {
     context: context,
     gain: gain,
     biquadFilter: biquadFilter
@@ -133,10 +141,88 @@ var createAudioContext = function createAudioContext() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "freqTable": () => /* binding */ freqTable,
-/* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */   "freqTable": () => /* binding */ freqTable
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var FrequencyTable = /*#__PURE__*/function (_React$Component) {
+  _inherits(FrequencyTable, _React$Component);
+
+  var _super = _createSuper(FrequencyTable);
+
+  function FrequencyTable() {
+    var _this;
+
+    _classCallCheck(this, FrequencyTable);
+
+    _this = _super.call(this);
+    _this.state = {
+      freqTable: {
+        90: 261.625565300598634,
+        83: 277.182630976872096,
+        88: 293.66476791740756,
+        68: 311.12698372208091,
+        67: 329.627556912869929,
+        86: 349.228231433003884,
+        71: 369.994422711634398,
+        66: 391.995435981749294,
+        72: 415.304697579945138,
+        78: 440.0,
+        74: 466.163761518089916,
+        77: 493.883301256124111,
+        81: 523.251130601197269,
+        50: 554.365261953744192,
+        87: 587.32953583481512,
+        51: 622.253967444161821,
+        69: 659.255113825739859,
+        82: 698.456462866007768,
+        53: 739.988845423268797,
+        84: 783.990871963498588,
+        54: 830.609395159890277,
+        89: 880.0,
+        55: 932.327523036179832,
+        85: 987.766602512248223,
+        73: 1046.5
+      }
+    };
+    return _this;
+  }
+
+  _createClass(FrequencyTable, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {}
+  }, {
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", null)));
+    }
+  }]);
+
+  return FrequencyTable;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
 
 var freqTable = {
   90: 261.625565300598634,
@@ -165,12 +251,6 @@ var freqTable = {
   85: 987.766602512248223,
   73: 1046.5
 };
-
-var FreqInput = function FreqInput() {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("h3", null, "Frequency Input form");
-};
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FreqInput);
 
 /***/ }),
 
@@ -240,14 +320,10 @@ var Keyboard = function Keyboard(props) {
   gain.connect(biquadFilter);
   biquadFilter.connect(context.destination);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    // const gain = context.createGain();
-    // const biquadFilter = context.createBiquadFilter();
-    // gain.connect(biquadFilter);
-    // biquadFilter.connect(context.destination);
-    gain.gain.setValueAtTime(gainLvl, context.currentTime);
-    biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
+    gain.gain.setValueAtTime(gainLvl, context.currentTime);
+    biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
     return function () {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
@@ -285,11 +361,7 @@ var Keyboard = function Keyboard(props) {
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "Keyboard"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
-    onClick: function onClick() {
-      return console.log(waveForm, filter, filterFreq, octave, gainLvl);
-    }
-  }, "Use State Values"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ul", {
     className: "set"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
     className: "controls"

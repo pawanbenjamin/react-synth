@@ -5,6 +5,13 @@
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: column;
+  text-align: center;
+}
+
 body {
   margin: 0;
   background: rgb(105, 192, 192);

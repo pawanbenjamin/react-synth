@@ -3,7 +3,6 @@ import { freqTable } from "../audio/frequencies";
 
 const Keyboard = (props) => {
   const { context } = props;
-
   context.resume();
 
   const [waveForm, setWaveForm] = useState("sine");
@@ -21,16 +20,11 @@ const Keyboard = (props) => {
   biquadFilter.connect(context.destination);
 
   useEffect(() => {
-    // const gain = context.createGain();
-
-    // const biquadFilter = context.createBiquadFilter();
-    // gain.connect(biquadFilter);
-    // biquadFilter.connect(context.destination);
-    gain.gain.setValueAtTime(gainLvl, context.currentTime);
-    biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
-
     window.addEventListener("keydown", keyDown, false);
     window.addEventListener("keyup", keyUp, false);
+
+    gain.gain.setValueAtTime(gainLvl, context.currentTime);
+    biquadFilter.frequency.setValueAtTime(filterFreq, context.currentTime);
 
     return () => {
       window.removeEventListener("keydown", keyDown);
@@ -68,13 +62,6 @@ const Keyboard = (props) => {
 
   return (
     <div className="Keyboard">
-      <button
-        onClick={() =>
-          console.log(waveForm, filter, filterFreq, octave, gainLvl)
-        }
-      >
-        Use State Values
-      </button>
       <ul className="set">
         <div className="controls">
           <span>Waveform: </span>
